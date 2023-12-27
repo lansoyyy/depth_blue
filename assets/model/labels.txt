@@ -1,0 +1,6 @@
+0 road
+1 people
+2 low
+3 medium
+4 inundated flood
+5 dark
