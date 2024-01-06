@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
 
 import '../../firebase/auth_service.dart';
+import '../../screens/homepage.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -170,6 +171,8 @@ class LoginPageState extends State<LoginPage> {
                       emailController.text,
                       passwordController.text,
                     );
+                    Navigator.of(context).pushReplacement(MaterialPageRoute(
+                        builder: (context) => const HomePage()));
                     // Handle successful sign-in
                   } catch (e) {
                     // Handle sign-in errors
