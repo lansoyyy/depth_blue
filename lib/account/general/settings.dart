@@ -1,10 +1,10 @@
 import 'package:depthblue3/account/general/privacy_policy.dart';
+import 'package:depthblue3/account/user/login.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../extra/theme.dart';
 import '../../firebase/auth_service.dart';
-import '../user/logout.dart';
 import '../user/profile.dart';
 import 'feedback.dart';
 
@@ -109,22 +109,52 @@ class _SettingScreenState extends State<SettingScreen> {
                     );
                   }),
                   const Divider(),
-                  buildSettingsItem('About Us', Icons.info, () {}),
+                  buildSettingsItem('About Us', Icons.info, () {
+                    showAboutDialog(
+                        context: context, applicationVersion: 'version 1.0.0');
+                  }),
                   const Divider(),
                   buildSettingsItem('Logout', Icons.exit_to_app, () async {
-                    bool? confirmLogout =
-                        await showLogoutConfirmationDialog(context);
-                    if (_isMounted && confirmLogout == true) {
-                      setState(() {
-                        loading = true;
-                      });
-                      await authService.signOut();
-                      if (_isMounted) {
-                        setState(() {
-                          loading = false;
-                        });
-                      }
-                    }
+                    showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                              title: const Text(
+                                'Logout Confirmation',
+                                style: TextStyle(
+                                    fontFamily: 'QBold',
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              content: const Text(
+                                'Are you sure you want to Logout?',
+                                style: TextStyle(fontFamily: 'QRegular'),
+                              ),
+                              actions: <Widget>[
+                                MaterialButton(
+                                  onPressed: () =>
+                                      Navigator.of(context).pop(true),
+                                  child: const Text(
+                                    'Close',
+                                    style: TextStyle(
+                                        fontFamily: 'QRegular',
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                                MaterialButton(
+                                  onPressed: () async {
+                                    Navigator.of(context).pushReplacement(
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                const LoginPage()));
+                                  },
+                                  child: const Text(
+                                    'Continue',
+                                    style: TextStyle(
+                                        fontFamily: 'QRegular',
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              ],
+                            ));
                   }),
                 ],
               ),

@@ -1,8 +1,10 @@
 import 'package:depthblue3/account/user/register.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
 
+import '../../extra/toast.dart';
 import '../../firebase/auth_service.dart';
 import '../../screens/homepage.dart';
 
@@ -117,17 +119,113 @@ class LoginPageState extends State<LoginPage> {
   }
 
   Widget buildForgotPasswordLink() {
-    return Container(
-      alignment: const Alignment(1.0, 0.0),
-      padding: const EdgeInsets.only(top: 25.0, left: 20.0),
-      child: const InkWell(
-        child: Center(
-          child: Text(
-            'Forgot Password',
-            style: TextStyle(
-              color: Colors.green,
-              fontWeight: FontWeight.bold,
-              fontFamily: 'Montserrat',
+    return GestureDetector(
+      onTap: () {
+        showDialog(
+          context: context,
+          builder: ((context) {
+            final formKey = GlobalKey<FormState>();
+            final TextEditingController emailController =
+                TextEditingController();
+
+            return AlertDialog(
+              title: const Text(
+                'Forgot Password',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'Montserrat',
+                ),
+              ),
+              content: Form(
+                key: formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [buildTextField('Email', emailController)],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: (() {
+                    Navigator.pop(context);
+                  }),
+                  child: const Text(
+                    'Cancel',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Montserrat',
+                    ),
+                  ),
+                ),
+                TextButton(
+                  onPressed: (() async {
+                    if (formKey.currentState!.validate()) {
+                      try {
+                        Navigator.pop(context);
+                        await FirebaseAuth.instance.sendPasswordResetEmail(
+                            email: emailController.text);
+
+                        showToast(
+                            context,
+                            'Password reset link sent to ${emailController.text}',
+                            Colors.blue,
+                            Colors.black);
+                      } catch (e) {
+                        String errorMessage = '';
+
+                        if (e is FirebaseException) {
+                          switch (e.code) {
+                            case 'invalid-email':
+                              errorMessage = 'The email address is invalid.';
+                              break;
+                            case 'user-not-found':
+                              errorMessage =
+                                  'The user associated with the email address is not found.';
+                              break;
+                            default:
+                              errorMessage =
+                                  'An error occurred while resetting the password.';
+                          }
+                        } else {
+                          errorMessage =
+                              'An error occurred while resetting the password.';
+                        }
+
+                        showToast(
+                            context, errorMessage, Colors.blue, Colors.black);
+                        Navigator.pop(context);
+                      }
+                    }
+                  }),
+                  child: const Text(
+                    'Continue',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Montserrat',
+                    ),
+                  ),
+                ),
+              ],
+            );
+          }),
+        );
+      },
+      child: Container(
+        alignment: const Alignment(1.0, 0.0),
+        padding: const EdgeInsets.only(top: 25.0, left: 20.0),
+        child: const InkWell(
+          child: Center(
+            child: Text(
+              'Forgot Password',
+              style: TextStyle(
+                color: Colors.green,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'Montserrat',
+              ),
             ),
           ),
         ),
