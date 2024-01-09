@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../account/general/settings.dart';
 import '../flood/events.dart';
+import '../location/map.dart';
 
 List<String> menuItems = ['History', 'Location', 'Settings'];
 
@@ -56,11 +57,11 @@ class _HomePageState extends State<HomePage> {
       case 0:
         return const FloodEvents();
       case 1:
-      // return FloodMapScreen();
+        return const FloodMapScreen();
       case 2:
         return const SettingScreen();
       default:
-        return Container();
+        return const SettingScreen();
     }
   }
 }
